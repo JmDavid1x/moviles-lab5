@@ -4,20 +4,29 @@ import 'package:moviles_auth/components/primary_button.dart';
 import 'package:moviles_auth/components/profile_field.dart';
 import 'package:moviles_auth/theme/app_theme.dart';
 
-/// Shows the profile of the signed in user and lets them sign out.
+/// Perfil del usuario con sesión abierta. No conoce Supabase: el cierre de
+/// sesión le llega como callback desde main.dart.
 class HomeScreen extends StatelessWidget {
   final String username;
   final String fullName;
   final String email;
+  final Future<void> Function()? onSignOut;
 
   const HomeScreen({
     super.key,
     this.username = 'usuario',
     this.fullName = 'Nombre Apellido',
     this.email = 'correo@ejemplo.com',
+    this.onSignOut,
   });
 
-  void _signOut(BuildContext context) {
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      await onSignOut?.call();
+    } catch (_) {
+      // Aunque falle el cierre en Supabase, volvemos al login.
+    }
+    if (!context.mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 

@@ -7,8 +7,11 @@ import 'package:moviles_auth/features/auth/data/repository/profile_repository_im
 import 'package:moviles_auth/features/auth/data/source/supabase_auth_data_source.dart';
 import 'package:moviles_auth/features/auth/data/source/supabase_profile_data_source.dart';
 import 'package:moviles_auth/features/auth/domain/entities/profile.dart';
+import 'package:moviles_auth/features/auth/domain/usecases/sign_in_usecase.dart';
+import 'package:moviles_auth/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:moviles_auth/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:moviles_auth/features/home/ui/screens/home_screen.dart';
+import 'package:moviles_auth/features/login/ui/bloc/login_bloc.dart';
 import 'package:moviles_auth/features/login/ui/screens/login_screen.dart';
 import 'package:moviles_auth/features/register/ui/bloc/register_bloc.dart';
 import 'package:moviles_auth/features/register/ui/screens/register_screen.dart';
@@ -34,8 +37,10 @@ Future<void> main() async {
 /// DataSource -> RepositoryImpl -> UseCase -> Bloc.
 class App extends StatelessWidget {
   final SignUpUseCase? signUp;
+  final SignInUseCase? signIn;
+  final SignOutUseCase? signOut;
 
-  const App({super.key, this.signUp});
+  const App({super.key, this.signUp, this.signIn, this.signOut});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +50,20 @@ class App extends StatelessWidget {
       theme: buildTheme(),
       initialRoute: '/login',
       routes: {
-        '/login': (_) => const LoginScreen(),
+        '/login': (_) => BlocProvider(
+          create: (_) => LoginBloc(
+            signIn ??
+                SignInUseCase(
+                  AuthRepositoryImpl(
+                    SupabaseAuthDataSource(Supabase.instance.client),
+                  ),
+                  ProfileRepositoryImpl(
+                    SupabaseProfileDataSource(Supabase.instance.client),
+                  ),
+                ),
+          ),
+          child: const LoginScreen(),
+        ),
         '/register': (_) => BlocProvider(
           create: (_) => RegisterBloc(
             signUp ??
@@ -65,10 +83,18 @@ class App extends StatelessWidget {
           final args =
               ModalRoute.of(context)!.settings.arguments
                   as ({Profile profile, String email});
+          final useCase =
+              signOut ??
+              SignOutUseCase(
+                AuthRepositoryImpl(
+                  SupabaseAuthDataSource(Supabase.instance.client),
+                ),
+              );
           return HomeScreen(
             username: args.profile.username,
             fullName: args.profile.fullName,
             email: args.email,
+            onSignOut: useCase.call,
           );
         },
       },
