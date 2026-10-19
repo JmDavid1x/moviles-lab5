@@ -34,8 +34,8 @@ Solo `auth/data/source/*` y `main.dart` importan `supabase_flutter`.
 
 ## Puesta en marcha
 
-1. En `lib/main.dart`, cambia `TU_URL` y `TU_PUBLISHABLE_KEY` por los de tu
-   proyecto (Project Settings → API). Nunca uses la `service_role`.
+1. `lib/main.dart` ya apunta al proyecto `zcrrgnybndwnnqwwwhhx`. Para usar otro,
+   cambia la URL y la publishable key (Project Settings → API). Nunca la `service_role`.
 2. Base de datos:
 
    ```bash

@@ -20,11 +20,10 @@ import 'package:moviles_auth/theme/app_theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // TODO(josedavid): poner la Project URL y la publishable key del proyecto
-  // (Supabase > Project Settings > API). La service_role NO va en la app.
+  // Llave publishable: es pública por diseño. La service_role NO va en la app.
   await Supabase.initialize(
-    url: 'TU_URL',
-    publishableKey: 'TU_PUBLISHABLE_KEY',
+    url: 'https://zcrrgnybndwnnqwwwhhx.supabase.co',
+    publishableKey: 'sb_publishable_9L5bmxDoyLtIIFtjFMCSzg_j4iXv-mk',
   );
 
   runApp(const App());
